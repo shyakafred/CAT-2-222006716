@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Check if the number of command line arguments is not equal to 1
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <positive_integer>"
+    exit 1
+fi
+
+# Check if the command line argument is a positive integer
+if ! [[ "$1" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Error: Please provide a positive integer as the command line argument."
+    exit 1
+fi
+
+# Function to calculate the sum of digits
+get_digit_sum() {
+    local number="$1"
+    local sum=0
+    while [ "$number" -gt 0 ]; do
+        sum=$((sum + number % 10))
+        number=$((number / 10))
+    done
+    echo "$sum"
+}
+
+# Function to calculate the product of digits
+get_digit_product() {
+    local number="$1"
+    local product=1
+    while [ "$number" -gt 0 ]; do
+        product=$((product * (number % 10)))
+        number=$((number / 10))
+    done
+    echo "$product"
+}
+
+# Function to check if the number is a palindrome
+is_palindrome() {
+    local reversed=""
+    local original="$1"
+    while [ "$original" -gt 0 ]; do
+        reversed="${reversed}${original%10}"
+        original=$((original / 10))
+    done
+    [ "$reversed" -eq "$1" ]
+}
+
+# Function to check if the number is prime
+is_prime() {
+    local num="$1"
+    for ((i=2; i<=num/2; i++)); do
+        if [ $((num % i)) -eq 0 ]; then
+            echo "No, $num is not a prime number."
+            return
+        fi
+    done
+    echo "Yes, $num is a prime number."
+}
+
+# Main script logic based on user's choice
+echo "Choose an operation:"
+echo "1. Display the sum and product of the digits of the number"
+echo "2. Display whether the number is a palindrome or not"
+echo "3. Display whether the number is prime or not"
+read -p "Enter your choice (1, 2, or 3): " choice
+
+case "$choice" in
+    1)
+        sum=$(get_digit_sum "$1")
+        product=$(get_digit_product "$1")
+        echo "Sum of digits: $sum"
+        echo "Product of digits: $product"
+        ;;
+    2)
+        if is_palindrome "$1"; then
+            echo "Yes, $1 is a palindrome."
+        else
+            echo "No, $1 is not a palindrome."
+        fi
+        ;;
+    3)
+        is_prime "$1"
+        ;;
+    *)
+        echo "Invalid choice. Please choose 1, 2, or 3."
+        exit 1
+        ;;
+esac
